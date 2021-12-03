@@ -3,7 +3,7 @@ const x = process.argv[2];
 const y = process.argv[3];
 const simple_numbers = [];
 
-if (isNaN(x) && isNaN(y)) {
+if (isNaN(x) || isNaN(y)) {
     console.log(colors.red('Введенные данные не являются числами'));
 } else {
     for (let i = x; i <= y; i++) {
