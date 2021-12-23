@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <script
+            src="https://cdn.socket.io/3.1.1/socket.io.min.js"
+            integrity="sha384-gDaozqUvc4HTgo8iZjwth73C6dDDeOJsAgpxBcMpZYztUfjHXpzrpdrHRdVp8ySO"
+            crossorigin="anonymous"
+        ></script>
+        <title>Socket Chat</title>
+    </head>
+    <body>
+        <input type="text" id="input" autofocus />
+        <input type="submit" id="send" value="Send" />
+        <div id="total"></div>
+        <div id="messages"></div>
+    </body>
+    <script type="text/javascript">
+        const socket = io("localhost:8888");
+        const total = (online) => {document.getElementById("total").innerHTML = online;}
+        const addMessage = (msg) => {
+            document.getElementById("messages").innerHTML =
+                document.getElementById("messages").innerHTML + msg + "<br>";
+        };
+        socket.on("connect", () => {
+            console.log("connected to server");
+        });
+
+        socket.on("CLIENT_CONNECTED", (data) => {
+            addMessage(`${data.msg}`);
+            total(`Всего пользователей в чате: ${data.online}`);
+        });
+
+        socket.on("SERVER_MSG", (data) => {
+            addMessage(`<span style="color: ${data.color}">${data.user}: ${data.msg}</span>`);
+        });
+
+        socket.on("CLIENT_DISCONNECTED", (data) => {
+            addMessage(`${data.msg}`);
+            total(`Всего пользователей в чате: ${data.online}`);
+        });
+
+        document.getElementById("send").onclick = () => {
+            socket.emit("CLIENT_MSG", {
+                msg: document.getElementById("input").value,
+            });
+            document.getElementById("input").value = "";
+        };
+    </script>
+</html>
